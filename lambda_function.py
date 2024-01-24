@@ -3,6 +3,7 @@ import numpy as np
 import logging
 import base64
 import boto3
+import json
 import io
 
 # label mapping
