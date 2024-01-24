@@ -27,8 +27,11 @@ def handler(event, context):
     try:
         logger.info(f"event: {event}")
 
+        # Parse the event body JSON
+        body = json.loads(event['body'])
+
         # Load the input image from the event
-        image_data = base64.b64decode(event['image'])
+        image_data = base64.b64decode(body['image'])
         image = Image.open(io.BytesIO(image_data))
         image = image.resize((32, 32))
         image_array = np.array(image) / 255.0
@@ -40,7 +43,7 @@ def handler(event, context):
         predicted_label = labels[predicted_label_index]
 
         # Load the original label
-        original_label_index = event['label']
+        original_label_index = body['label']
         original_label = labels[original_label_index]
 
         # Return the result

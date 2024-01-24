@@ -4,10 +4,14 @@ import base64
 # Replace with your Lambda function URL
 lambda_function_url = 'https://b6xp6og5g5s2bjmcabdi73odw40zimzl.lambda-url.ap-south-1.on.aws/'
 
+# Read the image file as bytes and encode it with base64
+with open("Images/0000.jpg", "rb") as image_file:
+    encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+
 # Create the event object
 event = {
-    'image_file_path': "Images/0000.jpg",
-    'label_data': "airplane"
+    "image": encoded_image,
+    "label": "airplane"
 }
 
 # Call the Lambda function
