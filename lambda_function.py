@@ -45,7 +45,7 @@ def handler(event, context):
         predicted_label = labels[predicted_label_index]
 
         # Load the original label
-        original_label_index = body['label']
+        original_label_index = int(body['label'])
         original_label = labels[original_label_index]
 
         # Return the result
