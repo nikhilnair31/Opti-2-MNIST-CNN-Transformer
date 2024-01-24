@@ -14,7 +14,7 @@ function Check-ECRRepositoryExists {
 }
 
 # Name
-$name = "tf-lambda"
+$name = "opti-tf-test-lambda"
 
 # Login
 "Loggin in..."

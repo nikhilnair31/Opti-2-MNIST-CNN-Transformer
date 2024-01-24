@@ -1,30 +1,38 @@
-import json
-import boto3
 import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+import boto3
+import io
 
-# Load your model from an S3 bucket
+# label mapping
+labels = '''airplane automobile bird cat deer dog frog horse ship truck'''.split()
+
+# Load the saved model
 s3 = boto3.client('s3')
-model_data = s3.get_object(Bucket='your-bucket-name', Key='path/to/your/model.h5')['Body'].read()
-model = tf.keras.models.load_model(tf.keras.utils.io_utils.TempFile(model_data))
+bucket_name = 'opti-tf-test-lambda'
+model_key = 'Models/model.h5'
+model_stream = s3.get_object(Bucket=bucket_name, Key=model_key)['Body']
+model = tf.keras.models.load_model(io.BytesIO(model_stream.read()))
 
 def lambda_handler(event, context):
-    # Get the image data from the event
-    image_data = base64.b64decode(json.loads(event['body'])['image'])
+    # Load the input image from the event
+    image_data = base64.b64decode(event['image'])
+    image = Image.open(io.BytesIO(image_data))
+    image = image.resize((32, 32))
+    image_array = np.array(image) / 255.0
+    image_array = np.expand_dims(image_array, axis=0)
 
-    # Preprocess the image data
-    image = tf.image.decode_jpeg(image_data, channels=3)
-    image = tf.image.resize(image, [224, 224])
-    image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
-    image = np.expand_dims(image, axis=0)
+    # Pass the image through the network and get the predicted label
+    prediction = model.predict(image_array)
+    predicted_label_index = np.argmax(prediction)
+    predicted_label = labels[predicted_label_index]
 
-    # Run the image data through the model
-    output_tensor = model.predict(image)
+    # Load the original label
+    original_label_index = event['label']
+    original_label = labels[original_label_index]
 
-    # Postprocess the output data
-    output_data = postprocess_output(output_tensor)
-
-    # Return the output data as a JSON response
+    # Return the result
     return {
-        'statusCode': 200,
-        'body': json.dumps(output_data)
+        'original_label': original_label,
+        'predicted_label': predicted_label
     }
