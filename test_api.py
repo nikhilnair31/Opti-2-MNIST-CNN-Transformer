@@ -1,4 +1,5 @@
 import requests
+import base64
 
 # Replace with your Lambda function URL
 lambda_function_url = 'https://b6xp6og5g5s2bjmcabdi73odw40zimzl.lambda-url.ap-south-1.on.aws/'

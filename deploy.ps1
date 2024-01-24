@@ -81,7 +81,6 @@ if ($lambdaUpdate) {
 
 # Git
 "Git"
-""
 # Commit and push the changes with the commit message "aws deploy"
 git add .
 git commit -m "aws deploy"
