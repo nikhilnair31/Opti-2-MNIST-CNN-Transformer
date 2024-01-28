@@ -69,7 +69,7 @@ def main():
         # Convert CSV to image
         st.subheader("Image Representation:")
         image = csv_to_image(uploaded_file.getvalue())
-        st.image(image, caption="CSV to Image", use_column_width=True)
+        st.image(image, caption="CSV to Image", width=100, use_column_width=True)
 
         # Button to call API
         if st.button("Call API"):
