@@ -43,7 +43,7 @@ def handler(event, context):
 
         # Use the model to classify the image
         prediction = model.predict(image_data)
-        predicted_class = np.argmax(prediction)
+        predicted_class = int(np.argmax(prediction))
 
         # Return the result
         return {
