@@ -26,10 +26,12 @@ def csv_to_image(csv_data):
     return image
 
 # Function to call an example API
-def call_api(image):
+def call_api(uploaded_file):
+    csv_data = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
+
     # Create the event object
     event = {
-        "csv_data": image.tolist()
+        "csv_data": csv_data
     }
 
     # Call the Lambda function
@@ -61,6 +63,9 @@ def main():
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
     if uploaded_file is not None:
+        # Read the CSV file as bytes and encode it with base64
+        csv_data = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
+
         # Convert CSV to image
         st.subheader("Image Representation:")
         image = csv_to_image(uploaded_file.getvalue())
@@ -69,7 +74,7 @@ def main():
         # Button to call API
         if st.button("Call API"):
             # Call API with the image representation
-            response_text = call_api(image)
+            response_text = call_api(uploaded_file)
             st.subheader("API Response:")
             st.write(response_text)
 
