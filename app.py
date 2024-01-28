@@ -52,8 +52,10 @@ def call_api(uploaded_file):
     # Parse the response as JSON
     response_json = response.json()
 
+    response_text = response_json['predicted_label']
+
     # Return the response
-    return response.text
+    return response_text
 
 # Streamlit app
 def main():
@@ -73,10 +75,10 @@ def main():
 
         # Button to call API
         if st.button("Call API"):
-            # Call API with the image representation
-            response_text = call_api(uploaded_file)
-            st.subheader("API Response:")
-            st.write(response_text)
+            with st.spinner("Running Inference..."):
+                # Call API with the image representation
+                response_text = call_api(uploaded_file)
+                st.subheader(f"Predicted Number: {response_text}")
 
 if __name__ == "__main__":
     main()
