@@ -32,25 +32,23 @@ def handler(event, context):
         # Parse the event body JSON
         body = json.loads(event['body'])
 
-        # Load the input image from the event
-        image_data = base64.b64decode(body['image'])
-        image = Image.open(io.BytesIO(image_data))
-        image = image.resize((32, 32))
-        image_array = np.array(image) / 255.0
-        image_array = np.expand_dims(image_array, axis=0)
+        # Retrieve CSV data from the event
+        csv_data_base64 = body.get('csv_data', '')
+        csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
 
-        # Pass the image through the network and get the predicted label
-        prediction = model.predict(image_array)
-        predicted_label_index = np.argmax(prediction)
-        predicted_label = labels[predicted_label_index]
+        # Load CSV data into a DataFrame
+        data = pd.read_csv(io.StringIO(csv_data), header=None)  # Adjust header argument if needed
 
-        # Load the original label
-        original_label = body['label']
+        # Preprocess the image data
+        image_data = data.values.reshape(1, 28, 28)
+        image_data = image_data / 255.0
 
+        # Use the model to classify the image
+        prediction = model.predict(image_data)
+        predicted_class = np.argmax(prediction)
         # Return the result
         return {
-            'original_label': original_label,
-            'predicted_label': predicted_label
+            'predicted_label': predicted_class
         }
 
     except Exception as e:
