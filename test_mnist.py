@@ -15,7 +15,7 @@ random_image = train_images[random_index]
 flat_image = np.reshape(random_image, (28 * 28))
 
 # Save the pixel values to a CSV file
-csv_file_path = 'Data/random_mnist_image.csv'
+csv_file_path = 'Data/test_image.csv'
 with open(csv_file_path, 'w', newline='') as csvfile:
     csvwriter = csv.writer(csvfile)
     csvwriter.writerow(flat_image)
