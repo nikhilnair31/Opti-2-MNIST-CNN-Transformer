@@ -59,9 +59,10 @@ def call_api(uploaded_file):
 
 # Streamlit app
 def main():
-    st.title("CSV to Image and API Call App")
+    st.title("Project 1 - Image Classification")
 
     # File upload
+    st.subheader("File Upload")
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
     if uploaded_file is not None:
@@ -69,12 +70,12 @@ def main():
         csv_data = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
 
         # Convert CSV to image
-        st.subheader("Image Representation:")
+        st.subheader("Image Representation")
         image = csv_to_image(uploaded_file.getvalue())
         st.image(image, caption="CSV to Image", width=100, use_column_width=True)
 
         # Button to call API
-        if st.button("Call API"):
+        if st.button("Predict Number"):
             with st.spinner("Running Inference..."):
                 # Call API with the image representation
                 response_text = call_api(uploaded_file)
