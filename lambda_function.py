@@ -8,9 +8,6 @@ import boto3
 import json
 import io
 
-# label mapping
-labels = '''airplane automobile bird cat deer dog frog horse ship truck'''.split()
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
@@ -38,7 +35,7 @@ def handler(event, context):
         csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
 
         # Load CSV data into a DataFrame
-        data = pd.read_csv(io.StringIO(csv_data), header=None)  # Adjust header argument if needed
+        data = pd.read_csv(io.StringIO(csv_data), header=None)
 
         # Preprocess the image data
         image_data = data.values.reshape(1, 28, 28)
@@ -47,6 +44,7 @@ def handler(event, context):
         # Use the model to classify the image
         prediction = model.predict(image_data)
         predicted_class = np.argmax(prediction)
+
         # Return the result
         return {
             'predicted_label': predicted_class

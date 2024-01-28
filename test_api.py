@@ -1,3 +1,4 @@
+import pandas as pd
 import requests
 import base64
 
@@ -5,13 +6,19 @@ import base64
 lambda_function_url = 'https://b6xp6og5g5s2bjmcabdi73odw40zimzl.lambda-url.ap-south-1.on.aws/'
 
 # Read the CSV file as bytes and encode it with base64
-with open("test_image.csv", "rb") as csv_file:
-    encoded_csv = base64.b64encode(csv_file.read()).decode('utf-8')
+csv_file_path = 'Data/test_image.csv'
+df = pd.read_csv(csv_file_path, header=None)
+print(f'df:\n{df}')
+
+csv_data_as_bytes = df.to_csv(index=False).encode('utf-8')
+base64_encoded = base64.b64encode(csv_data_as_bytes).decode('utf-8')
+print(f'base64_encoded:\n{base64_encoded}')
 
 # Create the event object
 event = {
-    "csv_data": encoded_csv
+    "csv_data": base64_encoded
 }
+print(f'event:\n{event}')
 
 # Call the Lambda function
 response = requests.post(lambda_function_url, json=event)
