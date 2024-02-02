@@ -52,10 +52,11 @@ def call_api(uploaded_file):
     # Parse the response as JSON
     response_json = response.json()
 
-    response_text = response_json['predicted_label']
+    cnn_response_text = response_json['cnn_predicted_label']
+    transformer_response_text = response_json['transformer_predicted_label']
 
     # Return the response
-    return response_text
+    return cnn_response_text, transformer_response_text
 
 # Streamlit app
 def main():
@@ -78,8 +79,10 @@ def main():
         if st.button("Predict Number"):
             with st.spinner("Running Inference..."):
                 # Call API with the image representation
-                response_text = call_api(uploaded_file)
-                st.subheader(f"Predicted Number: {response_text}")
+                cnn_response_text, transformer_response_text = call_api(uploaded_file)
+                st.subheader(f"Predicted Number")
+                st.subheader(f"CNN: {cnn_response_text}")
+                st.subheader(f"Transformer: {transformer_response_text}")
 
 if __name__ == "__main__":
     main()

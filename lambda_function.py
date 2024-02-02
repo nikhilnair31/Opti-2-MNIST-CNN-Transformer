@@ -14,13 +14,14 @@ logger.setLevel(logging.INFO)
 # Load the saved model
 s3 = boto3.client('s3')
 bucket_name = 'opti-tf-test-lambda'
-model_key = 'Models/model.h5'
+cnn_model_key = 'Models/cnn_model.h5'
+trasformer_model_key = 'Models/cnn_model.h5'
 
 # Download the model file from S3 to a local temporary file
 cnn_model_path = '/tmp/cnn_model.h5'
-s3.download_file(bucket_name, model_key, cnn_model_path)
+s3.download_file(bucket_name, cnn_model_key, cnn_model_path)
 trasformer_model_path = '/tmp/trasformer_model.h5'
-s3.download_file(bucket_name, model_key, trasformer_model_path)
+s3.download_file(bucket_name, trasformer_model_key, trasformer_model_path)
 
 # Load the model from the local file
 cnn_model = tf.keras.models.load_model(cnn_model_path)
@@ -54,7 +55,7 @@ def handler(event, context):
         # Return the result
         return {
             'cnn_predicted_label': cnn_predicted_class,
-            'trasformer_predicted_label': trasformer_predicted_class
+            'transformer_predicted_label': trasformer_predicted_class
         }
 
     except Exception as e:
