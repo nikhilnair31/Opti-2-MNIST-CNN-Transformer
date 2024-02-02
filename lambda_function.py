@@ -17,11 +17,14 @@ bucket_name = 'opti-tf-test-lambda'
 model_key = 'Models/model.h5'
 
 # Download the model file from S3 to a local temporary file
-local_model_path = '/tmp/model.h5'
-s3.download_file(bucket_name, model_key, local_model_path)
+cnn_model_path = '/tmp/cnn_model.h5'
+s3.download_file(bucket_name, model_key, cnn_model_path)
+trasformer_model_path = '/tmp/trasformer_model.h5'
+s3.download_file(bucket_name, model_key, trasformer_model_path)
 
 # Load the model from the local file
-model = tf.keras.models.load_model(local_model_path)
+cnn_model = tf.keras.models.load_model(cnn_model_path)
+trasformer_model = tf.keras.models.load_model(trasformer_model_path)
 
 def handler(event, context):
     try:
@@ -41,13 +44,17 @@ def handler(event, context):
         image_data = data.values.reshape(1, 28, 28)
         image_data = image_data / 255.0
 
-        # Use the model to classify the image
-        prediction = model.predict(image_data)
-        predicted_class = int(np.argmax(prediction))
+        # Use the cnn_model to classify the image
+        cnn_prediction = cnn_model.predict(image_data)
+        cnn_predicted_class = int(np.argmax(cnn_prediction))
+        # Use the cnn_model to classify the image
+        trasformer_prediction = trasformer_model.predict(image_data)
+        trasformer_predicted_class = int(np.argmax(trasformer_prediction))
 
         # Return the result
         return {
-            'predicted_label': predicted_class
+            'cnn_predicted_label': cnn_predicted_class,
+            'trasformer_predicted_label': trasformer_predicted_class
         }
 
     except Exception as e:

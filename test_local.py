@@ -10,7 +10,7 @@ csv_file_path = 'Data/test_image.csv'
 df = pd.read_csv(csv_file_path, header=None)
 print(f'df:\n{df}')
 
-local_model_path = 'Models/model.h5'
+local_model_path = 'Models/transformer_model.h5'
 model = tf.keras.models.load_model(local_model_path)
 
 # Preprocess the image data
