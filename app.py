@@ -81,8 +81,8 @@ def main():
                 # Call API with the image representation
                 cnn_response_text, transformer_response_text = call_api(uploaded_file)
                 st.subheader(f"Predicted Number")
-                st.subheader(f"CNN: {cnn_response_text}")
-                st.subheader(f"Transformer: {transformer_response_text}")
+                st.text(f"CNN: {cnn_response_text}")
+                st.text(f"Transformer: {transformer_response_text}")
 
 if __name__ == "__main__":
     main()
