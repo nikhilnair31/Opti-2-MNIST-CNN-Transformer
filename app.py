@@ -9,19 +9,21 @@ lambda_function_url = 'https://b6xp6og5g5s2bjmcabdi73odw40zimzl.lambda-url.ap-so
 
 # Function to convert CSV data to image representation
 def csv_to_image(csv_data):
-    # Convert CSV data to a list of values
-    values = list(map(float, csv_data.decode('utf-8').split(',')))
-
-    # Ensure that the list has exactly 784 values
-    if len(values) != 28 * 28:
+    # Use pandas to read the CSV file from the uploaded file-like object
+    df = pd.read_csv(io.StringIO(csv_data.decode('utf-8')), header=None)
+    
+    # Check if the DataFrame has 28 rows and 28 columns
+    if df.shape != (28, 28):
         st.error("CSV data should contain exactly 28x28 pixel values.")
         return None
 
-    # Convert the list to a NumPy array and reshape it into a 28x28 image
-    image = np.array(values).reshape((28, 28))
+    # Convert the DataFrame to a NumPy array
+    image = df.to_numpy()
 
-    # Normalize pixel values to be in the range [0.0, 1.0]
-    image = image / 255.0
+    # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
+    if image.max() > 1.0:
+        # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
+        image = image / 255.0
 
     return image
 

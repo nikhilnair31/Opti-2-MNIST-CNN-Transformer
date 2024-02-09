@@ -6,7 +6,7 @@ import json
 import io
 
 # Read the CSV file as bytes and encode it with base64
-csv_file_path = 'Data/test_image.csv'
+csv_file_path = 'Data/test_image_2.csv'
 df = pd.read_csv(csv_file_path, header=None)
 print(f'df:\n{df}')
 

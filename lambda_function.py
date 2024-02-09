@@ -41,9 +41,13 @@ def handler(event, context):
         # Load CSV data into a DataFrame
         data = pd.read_csv(io.StringIO(csv_data), header=None)
 
-        # Preprocess the image data
-        image_data = data.values.reshape(1, 28, 28)
-        image_data = image_data / 255.0
+        # Convert the DataFrame to a NumPy array
+        image = data.to_numpy()
+
+        # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
+        if image.max() > 1.0:
+            # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
+            image = image / 255.0
 
         # Use the cnn_model to classify the image
         cnn_prediction = cnn_model.predict(image_data)
