@@ -44,16 +44,21 @@ def predict(image_data):
 def to_image(image_data):
     print(f'to_image')
 
-    # Convert the image data to bytes
-    img = Image.fromarray((image_data * 255).astype(np.uint8))
-    img_byte_array = io.BytesIO()
-    img.save(img_byte_array, format='PNG')
-    img_byte_array = img_byte_array.getvalue()
+    # Convert array to 8-bit unsigned integer
+    uint8_array = image_data.astype(np.uint8)
 
-    # Encode the image data in base64
-    base64_img = base64.b64encode(img_byte_array).decode('utf-8')
+    # Create PIL Image
+    image = Image.fromarray(uint8_array)
 
-    return base64_img
+    # Convert PIL Image to bytes
+    img_bytes = io.BytesIO()
+    image.save(img_bytes, format='PNG')
+    img_bytes.seek(0)
+
+    # Encode bytes to base64
+    base64_encoded_image = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+
+    return base64_encoded_image
 
 def handler(event, context):
     try:
