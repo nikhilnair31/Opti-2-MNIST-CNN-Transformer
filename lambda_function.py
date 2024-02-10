@@ -45,23 +45,14 @@ def predict(image_data):
 def to_image(image_data):
     print(f'to_image')
 
-    # Convert array to 8-bit unsigned integer
-    uint8_array = image_data.astype(np.uint8)
-
-    # Create PIL Image
-    image = Image.fromarray(uint8_array)
-
-    # Convert PIL Image to bytes
-    img_bytes = io.BytesIO()
-    image.save(img_bytes, format='PNG')
-    img_bytes.seek(0)
-
-    # Encode the image bytes to base64. The result is still in bytes.
-    base64_encoded_image = base64.b64encode(img_bytes.getvalue())
+    image_array = (image_data * 255).reshape(28, 28).astype(np.uint8)
+    image = Image.fromarray(image_array)
     
-    # Decode the base64 bytes object to a string to make it easy to work with.
-    base64_string = base64_encoded_image.decode('utf-8')
-    print(f'base64_string\n{base64_string}')
+    # Convert the image to base64 to send back
+    buffered = io.BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    print(f'img_str\n{img_str}')
 
     return base64_string
 
@@ -71,20 +62,16 @@ def handler(event, context):
 
         # Parse the event body JSON
         body = json.loads(event['body'])
-
+        
         # Retrieve CSV data from the event
-        csv_data_base64 = body.get('csv_data', '')
-        csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
-        print(f'csv_data\n{csv_data}')
+        csv_data = body.get('csv_data', '')
+        logger.info(f"csv_data: {csv_data}")
 
-        # Parse string to list of lists
-        list_of_lists = ast.literal_eval(csv_data)
-        list_of_lists = [[float(entry) for entry in row] for row in list_of_lists]
-        print(f'list_of_lists\n{list_of_lists}')
+        image_data = np.array(csv_data).astype(float)
+        logger.info(f"image_data: {image_data}")
 
         # Convert the preprocessed data to a NumPy array
         # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
-        image_data = np.array(list_of_lists)
         if image_data.max() > 1.0:
             image_data = image_data / 255.0
 
