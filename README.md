@@ -1,4 +1,8 @@
-![Example Image](other\Opti II MNIST.png)
+<div style="text-align: center;">
+    <img src="./other/Opti II MNIST.png" width="200" />
+</div>
+</br>
+
 
 # TensorFlow Image Classification Lambda Function
 
