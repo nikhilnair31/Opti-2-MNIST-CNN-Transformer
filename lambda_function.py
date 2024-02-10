@@ -55,10 +55,13 @@ def to_image(image_data):
     image.save(img_bytes, format='PNG')
     img_bytes.seek(0)
 
-    # Encode bytes to base64
-    base64_encoded_image = base64.b64encode(img_bytes.getvalue()).decode('utf-8')
+    # Encode the image bytes to base64. The result is still in bytes.
+    base64_encoded_image = base64.b64encode(img_bytes.getvalue())
+    
+    # Decode the base64 bytes object to a string to make it easy to work with.
+    base64_string = base64_encoded_image.decode('utf-8')
 
-    return base64_encoded_image
+    return base64_string
 
 def handler(event, context):
     try:
