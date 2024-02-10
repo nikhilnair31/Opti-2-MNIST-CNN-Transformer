@@ -31,12 +31,14 @@ trasformer_model = tf.keras.models.load_model(trasformer_model_path)
 
 def predict(image_data):
     print(f'predict')
+    
+    image_array = image_data.reshape(1, 28, 28)
 
     # Use the cnn_model to classify the image
-    cnn_prediction = cnn_model.predict(image_data)
+    cnn_prediction = cnn_model.predict(image_array)
     cnn_predicted_class = int(np.argmax(cnn_prediction))
     # Use the cnn_model to classify the image
-    trasformer_prediction = trasformer_model.predict(image_data)
+    trasformer_prediction = trasformer_model.predict(image_array)
     trasformer_predicted_class = int(np.argmax(trasformer_prediction))
     print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
 
