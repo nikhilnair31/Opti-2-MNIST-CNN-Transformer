@@ -60,15 +60,13 @@ def handler(event, context):
         csv_data_base64 = body.get('csv_data', '')
         csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
         print(f'csv_data\n{csv_data}')
-        
-        # Load CSV data into a DataFrame
-        # csv_df = pd.read_csv(io.StringIO(csv_data), header=None)
-        # print(f'csv_df\n{csv_df}')
-        
-        # Convert the DataFrame to a NumPy array
-        image_data = np.array(csv_data).astype(float)
-        # image_data = csv_df.to_numpy()
-        # image_data = np.array(image_data, dtype=np.float64)
+
+        # Convert strings to floats
+        csv_data_float = [[float(num) for num in row] for row in csv_data]
+        print(f'csv_data_float\n{csv_data_float}')
+
+        # Convert the preprocessed data to a NumPy array
+        image_data = np.array(csv_data_float).astype(float)
         print(f'image_data\n{image_data}')
 
         # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
