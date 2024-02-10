@@ -59,12 +59,15 @@ def handler(event, context):
         # Retrieve CSV data from the event
         csv_data_base64 = body.get('csv_data', '')
         csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
+        print(f'csv_data\n{csv_data}')
         
         # Load CSV data into a DataFrame
         csv_df = pd.read_csv(io.StringIO(csv_data), header=None)
+        print(f'csv_df\n{csv_df}')
         
         # Convert the DataFrame to a NumPy array
         image_data = csv_df.to_numpy()
+        print(f'image_data\n{image_data}')
 
         # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
         if image_data.max() > 1.0:
