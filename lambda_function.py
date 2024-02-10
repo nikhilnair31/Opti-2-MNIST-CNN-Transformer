@@ -66,7 +66,7 @@ def handler(event, context):
         # print(f'csv_df\n{csv_df}')
         
         # Convert the DataFrame to a NumPy array
-        image_data = np.array(csv_data)
+        image_data = np.array(csv_data).astype(float)
         # image_data = csv_df.to_numpy()
         # image_data = np.array(image_data, dtype=np.float64)
         print(f'image_data\n{image_data}')
