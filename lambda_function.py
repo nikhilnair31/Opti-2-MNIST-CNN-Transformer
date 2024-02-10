@@ -7,6 +7,7 @@ import base64
 import boto3
 import json
 import csv
+import ast
 import io
 
 logger = logging.getLogger()
@@ -61,25 +62,14 @@ def handler(event, context):
         csv_data_base64 = body.get('csv_data', '')
         csv_data = base64.b64decode(csv_data_base64).decode('utf-8')
         print(f'csv_data\n{csv_data}')
-        
-        csv_data_list = list(csv.reader(csv_data.splitlines()))
-        print(f'csv_data_list\n{csv_data_list}')
 
-        # Convert strings to floats
-        csv_data_float = []
-        for row in csv_data_list:
-            row_float = []
-            for num in row:
-                try:
-                    row_float.append(float(num))
-                except ValueError:
-                    row_float.append(num)  # Keep as string if unable to convert to float
-            csv_data_float.append(row_float)
-
-        print(f'csv_data_float\n{csv_data_float}')
+        # Parse string to list of lists
+        list_of_lists = ast.literal_eval(csv_data)
+        list_of_lists = [[float(entry) for entry in row] for row in list_of_lists]
+        print(f'list_of_lists\n{list_of_lists}')
 
         # Convert the preprocessed data to a NumPy array
-        image_data = np.array(csv_data_float).astype(float)
+        image_data = np.array(list_of_lists)
         print(f'image_data\n{image_data}')
 
         # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
