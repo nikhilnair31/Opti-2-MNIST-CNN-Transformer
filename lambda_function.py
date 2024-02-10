@@ -62,12 +62,13 @@ def handler(event, context):
         print(f'csv_data\n{csv_data}')
         
         # Load CSV data into a DataFrame
-        csv_df = pd.read_csv(io.StringIO(csv_data), header=None)
-        print(f'csv_df\n{csv_df}')
+        # csv_df = pd.read_csv(io.StringIO(csv_data), header=None)
+        # print(f'csv_df\n{csv_df}')
         
         # Convert the DataFrame to a NumPy array
-        image_data = csv_df.to_numpy()
-        image_data = np.array(image_data, dtype=np.float64)
+        image_data = np.array(csv_data)
+        # image_data = csv_df.to_numpy()
+        # image_data = np.array(image_data, dtype=np.float64)
         print(f'image_data\n{image_data}')
 
         # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
