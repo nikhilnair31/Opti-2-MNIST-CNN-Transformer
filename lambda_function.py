@@ -83,17 +83,13 @@ def handler(event, context):
         print(f'list_of_lists\n{list_of_lists}')
 
         # Convert the preprocessed data to a NumPy array
+        # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
         image_data = np.array(list_of_lists)
-        print(f'image_data\n{image_data}')
-
-        # Check if normalization is needed (assuming the values are either in 0-255 or 0-1 range)
         if image_data.max() > 1.0:
-            # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
             image_data = image_data / 255.0
-        print(f'updated image_data\n{image_data}')
 
         function = body.get('function', '')
-        print(f'function\n{function}')
+        print(f'function: {function}')
 
         if function == 'predict':
             cnn_predicted_class, transformer_predicted_class = predict(image_data)
