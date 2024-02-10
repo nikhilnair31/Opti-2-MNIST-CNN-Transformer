@@ -102,7 +102,7 @@ def handler(event, context):
         elif function == 'to_image':
             base64_img = to_image(image_data)
             return {
-                'base64_img': base64.b64encode(base64_img).decode('utf-8')
+                'base64_img': base64_img
             }
         else:
             return {"error": "Invalid function specified"}
