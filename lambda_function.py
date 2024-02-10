@@ -54,7 +54,7 @@ def to_image(image_data):
     img_str = base64.b64encode(buffered.getvalue()).decode()
     print(f'img_str\n{img_str}')
 
-    return base64_string
+    return img_str
 
 def handler(event, context):
     try:
@@ -67,11 +67,9 @@ def handler(event, context):
         csv_data = body.get('csv_data', '')
         logger.info(f"csv_data: {csv_data}")
 
-        image_data = np.array(csv_data).astype(float)
-        logger.info(f"image_data: {image_data}")
-
         # Convert the preprocessed data to a NumPy array
         # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
+        image_data = np.array(csv_data).astype(float)
         if image_data.max() > 1.0:
             image_data = image_data / 255.0
 
