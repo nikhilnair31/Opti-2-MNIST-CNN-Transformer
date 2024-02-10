@@ -38,6 +38,7 @@ def predict(image_data):
     # Use the cnn_model to classify the image
     trasformer_prediction = trasformer_model.predict(image_data)
     trasformer_predicted_class = int(np.argmax(trasformer_prediction))
+    print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
 
     return cnn_predicted_class, trasformer_predicted_class
 
@@ -60,6 +61,7 @@ def to_image(image_data):
     
     # Decode the base64 bytes object to a string to make it easy to work with.
     base64_string = base64_encoded_image.decode('utf-8')
+    print(f'base64_string\n{base64_string}')
 
     return base64_string
 
