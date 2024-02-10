@@ -30,6 +30,8 @@ cnn_model = tf.keras.models.load_model(cnn_model_path)
 trasformer_model = tf.keras.models.load_model(trasformer_model_path)
 
 def predict(image_data):
+    print(f'predict')
+
     # Use the cnn_model to classify the image
     cnn_prediction = cnn_model.predict(image_data)
     cnn_predicted_class = int(np.argmax(cnn_prediction))
@@ -40,6 +42,8 @@ def predict(image_data):
     return cnn_predicted_class, trasformer_predicted_class
 
 def to_image(image_data):
+    print(f'to_image')
+
     # Convert the image data to bytes
     img = Image.fromarray((image_data * 255).astype(np.uint8))
     img_byte_array = io.BytesIO()
@@ -76,8 +80,11 @@ def handler(event, context):
         if image_data.max() > 1.0:
             # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
             image_data = image_data / 255.0
+        print(f'updated image_data\n{image_data}')
 
         function = body.get('function', '')
+        print(f'function\n{function}')
+
         if function == 'predict':
             cnn_predicted_class, transformer_predicted_class = predict(image_data)
             return {
