@@ -50,13 +50,12 @@ cnn_model = tf.keras.models.load_model(cnn_model_path)
 with keras.utils.custom_object_scope({'ClassToken': ClassToken}):
     trasformer_model = keras.models.load_model(trasformer_model_path)
 
-def predict(csv_data):
+def predict(csv_data_array):
     print(f'predict')
 
     # Use below to classify the image
     n = 4
     block_size = 7
-    csv_data_array = np.array(csv_data)
     x_test_ravel = np.zeros((1,n**2,block_size**2))
     for img in range(1):
         ind = 0
@@ -64,17 +63,18 @@ def predict(csv_data):
             for col in range(n):
                 x_test_ravel[img, ind, :] = csv_data_array[(row * block_size):((row + 1) * block_size), (col * block_size):((col + 1) * block_size)].ravel()
                 ind += 1
-    pos_feed = np.array([list(range(n ** 2))]*1)
-    trasformer_predicted_output = trasformer_model.predict([x_test_ravel, pos_feed])
-    trasformer_predicted_class = np.argmax(trasformer_predicted_output)
+
+    pos_feed = np.array([list(range(n**2))]*1)
+    transformer_predicted_output = trasformer_model.predict([x_test_ravel,pos_feed])
+    transformer_predicted_class = np.argmax(transformer_predicted_output)
+    print(f'transformer_predicted_class: {transformer_predicted_class}')
     
     # Use the cnn_model to classify the image
-    csv_data_array = np.array(csv_data)
     csv_data = csv_data_array.reshape(1,28, 28, 1)
     cnn_prediction = cnn_model.predict(csv_data)
     cnn_predicted_class = int(np.argmax(cnn_prediction))
+    print(f'cnn_predicted_class: {cnn_predicted_class}')
 
-    print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
     return cnn_predicted_class, trasformer_predicted_class
 
 def to_image(csv_data):
@@ -107,18 +107,19 @@ def handler(event, context):
         csv_data = np.array(csv_data).astype(float)
         if csv_data.max() > 1.0:
             csv_data = csv_data / 255.0
+        csv_data_array = np.array(csv_data)
 
         function = body.get('function', '')
         print(f'function: {function}')
 
         if function == 'predict':
-            cnn_predicted_class, transformer_predicted_class = predict(csv_data)
+            cnn_predicted_class, transformer_predicted_class = predict(csv_data_array)
             return {
                 'cnn_predicted_label': cnn_predicted_class,
                 'transformer_predicted_label': transformer_predicted_class
             }
         elif function == 'to_image':
-            base64_img = to_image(csv_data)
+            base64_img = to_image(csv_data_array)
             return {
                 'base64_img': base64_img
             }
