@@ -69,6 +69,8 @@ def predict(csv_data):
     trasformer_predicted_class = np.argmax(trasformer_predicted_output)
     
     # Use the cnn_model to classify the image
+    csv_data_array = np.array(csv_data)
+    csv_data = csv_data_array.reshape(1,28, 28, 1)
     cnn_prediction = cnn_model.predict(csv_data)
     cnn_predicted_class = int(np.argmax(cnn_prediction))
 
