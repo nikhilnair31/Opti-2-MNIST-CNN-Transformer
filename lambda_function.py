@@ -75,7 +75,7 @@ def predict(csv_data_array):
     cnn_predicted_class = int(np.argmax(cnn_prediction))
     print(f'cnn_predicted_class: {cnn_predicted_class}')
 
-    return cnn_predicted_class, trasformer_predicted_class
+    return cnn_predicted_class, transformer_predicted_class
 
 def to_image(csv_data):
     print(f'to_image')
