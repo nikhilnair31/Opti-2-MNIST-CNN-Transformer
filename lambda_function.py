@@ -65,7 +65,7 @@ def predict(csv_data):
                 x_test_ravel[img, ind, :] = csv_data_array[(row * block_size):((row + 1) * block_size), (col * block_size):((col + 1) * block_size)].ravel()
                 ind += 1
     pos_feed = np.array([list(range(n ** 2))]*1)
-    trasformer_predicted_output = model_t.predict([x_test_ravel, pos_feed])
+    trasformer_predicted_output = trasformer_model.predict([x_test_ravel, pos_feed])
     trasformer_predicted_class = np.argmax(trasformer_predicted_output)
     
     # Use the cnn_model to classify the image
