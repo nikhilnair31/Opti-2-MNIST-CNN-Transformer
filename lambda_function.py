@@ -18,13 +18,13 @@ logger.setLevel(logging.INFO)
 s3 = boto3.client('s3')
 bucket_name = 'opti-tf-test-lambda'
 cnn_model_key = 'Models/cnn_model.h5'
-trasformer_model_key = 'Models/cnn_model.h5'
+transformer_model_key = 'Models/transformer_model.h5'
+cnn_model_path = '/tmp/cnn_model.h5'
+transformer_model_path = '/tmp/transformer_model.h5'
 
 # Download the model file from S3 to a local temporary file
-cnn_model_path = '/tmp/cnn_model.h5'
 s3.download_file(bucket_name, cnn_model_key, cnn_model_path)
-trasformer_model_path = '/tmp/trasformer_model.h5'
-s3.download_file(bucket_name, trasformer_model_key, trasformer_model_path)
+s3.download_file(bucket_name, transformer_model_key, transformer_model_path)
 
 class ClassToken(tf.keras.layers.Layer):
     def _init_(self):
@@ -48,7 +48,7 @@ class ClassToken(tf.keras.layers.Layer):
 # Load the model from the local file
 cnn_model = tf.keras.models.load_model(cnn_model_path)
 with keras.utils.custom_object_scope({'ClassToken': ClassToken}):
-    trasformer_model = keras.models.load_model(trasformer_model_path)
+    transformer_model = keras.models.load_model(transformer_model_path)
 
 def predict(csv_data_array):
     print(f'predict')
@@ -65,7 +65,7 @@ def predict(csv_data_array):
                 ind += 1
 
     pos_feed = np.array([list(range(n**2))]*1)
-    transformer_predicted_output = trasformer_model.predict([x_test_ravel,pos_feed])
+    transformer_predicted_output = transformer_model.predict([x_test_ravel,pos_feed])
     transformer_predicted_class = np.argmax(transformer_predicted_output)
     print(f'transformer_predicted_class: {transformer_predicted_class}')
     
