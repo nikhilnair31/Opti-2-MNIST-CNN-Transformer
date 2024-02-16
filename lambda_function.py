@@ -66,13 +66,13 @@ def predict(csv_data_array):
 
     pos_feed = np.array([list(range(n**2))]*1)
     transformer_predicted_output = transformer_model.predict([x_test_ravel,pos_feed])
-    transformer_predicted_class = np.argmax(transformer_predicted_output)
+    transformer_predicted_class = str(np.argmax(transformer_predicted_output))
     print(f'transformer_predicted_class: {transformer_predicted_class}')
     
     # Use the cnn_model to classify the image
     csv_data = csv_data_array.reshape(1,28, 28, 1)
     cnn_prediction = cnn_model.predict(csv_data)
-    cnn_predicted_class = int(np.argmax(cnn_prediction))
+    cnn_predicted_class = str(np.argmax(cnn_prediction))
     print(f'cnn_predicted_class: {cnn_predicted_class}')
 
     return cnn_predicted_class, transformer_predicted_class
