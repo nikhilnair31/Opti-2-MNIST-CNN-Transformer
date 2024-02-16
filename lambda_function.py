@@ -50,35 +50,35 @@ cnn_model = tf.keras.models.load_model(cnn_model_path)
 with keras.utils.custom_object_scope({'ClassToken': ClassToken}):
     trasformer_model = keras.models.load_model(trasformer_model_path)
 
-def predict(image_data):
+def predict(csv_data):
     print(f'predict')
-    
-    # Use the cnn_model to classify the image
-    cnn_prediction = cnn_model.predict(image_array)
-    cnn_predicted_class = int(np.argmax(cnn_prediction))
 
     # Use below to classify the image
-    image_data_array = np.array(image_data)
     n = 4
     block_size = 7
-    x_test_ravel = np.zeros((1, 16, block_size ** 2))
+    csv_data_array = np.array(csv_data)
+    x_test_ravel = np.zeros((1,n**2,block_size**2))
     for img in range(1):
         ind = 0
         for row in range(n):
             for col in range(n):
-                x_test_ravel[img, ind, :] = file[(row * block_size):((row + 1) * block_size), (col * block_size):((col + 1) * block_size)].ravel()
+                x_test_ravel[img, ind, :] = csv_data_array[(row * block_size):((row + 1) * block_size), (col * block_size):((col + 1) * block_size)].ravel()
                 ind += 1
     pos_feed = np.array([list(range(n ** 2))]*1)
     trasformer_predicted_output = model_t.predict([x_test_ravel, pos_feed])
     trasformer_predicted_class = np.argmax(trasformer_predicted_output)
+    
+    # Use the cnn_model to classify the image
+    cnn_prediction = cnn_model.predict(csv_data)
+    cnn_predicted_class = int(np.argmax(cnn_prediction))
 
     print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
     return cnn_predicted_class, trasformer_predicted_class
 
-def to_image(image_data):
+def to_image(csv_data):
     print(f'to_image')
 
-    image_array = (image_data * 255).reshape(28, 28).astype(np.uint8)
+    image_array = (csv_data * 255).reshape(28, 28).astype(np.uint8)
     image = Image.fromarray(image_array)
     
     # Convert the image to base64 to send back
@@ -102,21 +102,21 @@ def handler(event, context):
 
         # Convert the preprocessed data to a NumPy array
         # Normalize pixel values to be in the range [0.0, 1.0] if they're in the 0-255 range
-        image_data = np.array(csv_data).astype(float)
-        if image_data.max() > 1.0:
-            image_data = image_data / 255.0
+        csv_data = np.array(csv_data).astype(float)
+        if csv_data.max() > 1.0:
+            csv_data = csv_data / 255.0
 
         function = body.get('function', '')
         print(f'function: {function}')
 
         if function == 'predict':
-            cnn_predicted_class, transformer_predicted_class = predict(image_data)
+            cnn_predicted_class, transformer_predicted_class = predict(csv_data)
             return {
                 'cnn_predicted_label': cnn_predicted_class,
                 'transformer_predicted_label': transformer_predicted_class
             }
         elif function == 'to_image':
-            base64_img = to_image(image_data)
+            base64_img = to_image(csv_data)
             return {
                 'base64_img': base64_img
             }
