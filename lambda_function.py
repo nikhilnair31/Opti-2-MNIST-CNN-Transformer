@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import logging
 import base64
+import keras
 import boto3
 import json
 import csv
@@ -25,23 +26,53 @@ s3.download_file(bucket_name, cnn_model_key, cnn_model_path)
 trasformer_model_path = '/tmp/trasformer_model.h5'
 s3.download_file(bucket_name, trasformer_model_key, trasformer_model_path)
 
+class ClassToken(tf.keras.layers.Layer):
+    def _init_(self):
+        super()._init_()
+
+    def build(self, input_shape):
+        w_init = tf.random_normal_initializer()
+        self.w = tf.Variable(
+            initial_value = w_init(shape=(1, 1, input_shape[-1]), dtype=tf.float32),
+            trainable = True
+        )
+
+    def call(self, inputs):
+        batch_size = tf.shape(inputs)[0]
+        hidden_dim = self.w.shape[-1]
+
+        cls = tf.broadcast_to(self.w, [batch_size, 1, hidden_dim])
+        cls = tf.cast(cls, dtype=inputs.dtype)
+        return cls
+
 # Load the model from the local file
 cnn_model = tf.keras.models.load_model(cnn_model_path)
-trasformer_model = tf.keras.models.load_model(trasformer_model_path)
+with keras.utils.custom_object_scope({'ClassToken': ClassToken}):
+    trasformer_model = keras.models.load_model(trasformer_model_path)
 
 def predict(image_data):
     print(f'predict')
     
-    image_array = image_data.reshape(1, 28, 28)
-
     # Use the cnn_model to classify the image
     cnn_prediction = cnn_model.predict(image_array)
     cnn_predicted_class = int(np.argmax(cnn_prediction))
-    # Use the cnn_model to classify the image
-    trasformer_prediction = trasformer_model.predict(image_array)
-    trasformer_predicted_class = int(np.argmax(trasformer_prediction))
-    print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
 
+    # Use below to classify the image
+    image_data_array = np.array(image_data)
+    n = 4
+    block_size = 7
+    x_test_ravel = np.zeros((1, 16, block_size ** 2))
+    for img in range(1):
+        ind = 0
+        for row in range(n):
+            for col in range(n):
+                x_test_ravel[img, ind, :] = file[(row * block_size):((row + 1) * block_size), (col * block_size):((col + 1) * block_size)].ravel()
+                ind += 1
+    pos_feed = np.array([list(range(n ** 2))]*1)
+    trasformer_predicted_output = model_t.predict([x_test_ravel, pos_feed])
+    trasformer_predicted_class = np.argmax(trasformer_predicted_output)
+
+    print(f'cnn_predicted_class: {cnn_predicted_class}\ntrasformer_predicted_class: {trasformer_predicted_class}')
     return cnn_predicted_class, trasformer_predicted_class
 
 def to_image(image_data):
