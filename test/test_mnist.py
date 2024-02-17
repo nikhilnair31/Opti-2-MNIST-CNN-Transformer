@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import csv
+import os
 import random
 
 # Load MNIST dataset
@@ -25,7 +26,7 @@ for i in range(num_images):
     # Save the pixel values to a CSV file
     csv_file_path = f'Data/random_image_{i + 1}.csv'
     with open(csv_file_path, 'w', newline='') as csvfile:
-        csvwriter = csv.writer(csvfile)
+        csvwriter = csv.writer(csvfile, lineterminator='\n')
         # Write each row of the image to the CSV file
         for row in image_to_write:
             csvwriter.writerow(row)
